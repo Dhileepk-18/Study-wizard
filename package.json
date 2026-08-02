@@ -1,0 +1,21 @@
+{
+  "name": "study-wizard",
+  "version": "1.0.0",
+  "description": "AI-Powered Adaptive Study Planner",
+  "scripts": {
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm install && npm run build && cd ../server && npm install",
+    "start": "cd server && node index.js"
+  },
+  "keywords": [
+    "study-planner",
+    "ai",
+    "react",
+    "node",
+    "express",
+    "mongodb"
+  ],
+  "author": "",
+  "license": "ISC"
+}
