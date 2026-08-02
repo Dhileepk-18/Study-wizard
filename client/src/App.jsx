@@ -20,14 +20,64 @@ import RevisionPlanner from './components/Revision/RevisionPlanner';
 import GamificationCenter from './components/Gamification/GamificationCenter';
 import ProfileSettingsView from './components/ProfileSettings/ProfileSettingsView';
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('Study Wizard Runtime Error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#070B14] text-white flex flex-col items-center justify-center p-6 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mb-4 border border-rose-500/30">
+            <span className="text-2xl font-bold">!</span>
+          </div>
+          <h2 className="text-2xl font-bold font-outfit mb-2">Something went wrong</h2>
+          <p className="text-slate-400 text-sm max-w-md mb-6">
+            {this.state.error?.message || 'A runtime error occurred in the application.'}
+          </p>
+          <button
+            onClick={() => {
+              localStorage.removeItem('study_wizard_token');
+              window.location.href = '/';
+            }}
+            className="px-6 py-3 bg-violet-600 hover:bg-violet-500 font-bold rounded-xl text-sm transition-all"
+          >
+            Reset Session & Reload
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 function MainLayout() {
-  const { user, token } = useAuth();
+  const { user, token, loading } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [globalSearch, setGlobalSearch] = useState('');
   const [showAuthPage, setShowAuthPage] = useState(false);
 
-  if (showAuthPage || (!token && !user)) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#070B14] flex flex-col items-center justify-center gap-3">
+        <div className="w-10 h-10 border-4 border-violet-500/30 border-t-violet-500 rounded-full animate-spin" />
+        <p className="text-xs font-semibold text-slate-400">Loading Study Wizard...</p>
+      </div>
+    );
+  }
+
+  if (showAuthPage || !token || !user) {
     return (
       <AuthPage
         onAuthSuccess={() => setShowAuthPage(false)}
@@ -110,13 +160,15 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <DataProvider>
-          <MainLayout />
-        </DataProvider>
-      </AuthProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <AuthProvider>
+          <DataProvider>
+            <MainLayout />
+          </DataProvider>
+        </AuthProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 
