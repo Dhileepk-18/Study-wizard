@@ -49,7 +49,7 @@ export default function AuthPage({ isRegisterInitial = false }) {
         await login(email, password);
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || 'Authentication failed. Check your credentials.');
+      setErrorMsg(err.response?.data?.message || err.response?.data?.error || err.message || 'Authentication failed. Check your credentials.');
     } finally {
       setLoading(false);
     }
