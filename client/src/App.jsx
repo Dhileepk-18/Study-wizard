@@ -36,14 +36,18 @@ class ErrorBoundary extends React.Component {
 
   render() {
     if (this.state.hasError) {
+      const errorText = typeof this.state.error === 'object' && this.state.error !== null
+        ? (this.state.error.message || JSON.stringify(this.state.error))
+        : String(this.state.error || 'A runtime error occurred in the application.');
+
       return (
         <div className="min-h-screen bg-[#070B14] text-white flex flex-col items-center justify-center p-6 text-center">
           <div className="w-16 h-16 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center mb-4 border border-rose-500/30">
             <span className="text-2xl font-bold">!</span>
           </div>
           <h2 className="text-2xl font-bold font-outfit mb-2">Something went wrong</h2>
-          <p className="text-slate-400 text-sm max-w-md mb-6">
-            {this.state.error?.message || 'A runtime error occurred in the application.'}
+          <p className="text-slate-400 text-sm max-w-md mb-6 break-words font-mono text-xs bg-slate-900/60 p-4 rounded-xl border border-white/10">
+            {errorText}
           </p>
           <button
             onClick={() => {

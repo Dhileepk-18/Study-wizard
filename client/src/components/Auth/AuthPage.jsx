@@ -49,7 +49,17 @@ export default function AuthPage({ isRegisterInitial = false }) {
         await login(email, password);
       }
     } catch (err) {
-      setErrorMsg(err.response?.data?.message || err.response?.data?.error || err.message || 'Authentication failed. Check your credentials.');
+      let msg = 'Authentication failed. Check your credentials.';
+      if (typeof err?.response?.data?.message === 'string') {
+        msg = err.response.data.message;
+      } else if (typeof err?.response?.data?.error === 'string') {
+        msg = err.response.data.error;
+      } else if (typeof err?.response?.data?.error?.message === 'string') {
+        msg = err.response.data.error.message;
+      } else if (typeof err?.message === 'string') {
+        msg = err.message;
+      }
+      setErrorMsg(msg);
     } finally {
       setLoading(false);
     }
