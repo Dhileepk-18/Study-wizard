@@ -13,7 +13,7 @@ export default function DashboardView({ onNavigate }) {
   const {
     subjects = [], exams = [], schedulePlans = [], analytics,
     gamification, triggerAdaptiveReschedule, rescheduling,
-    toggleTopicCompletion, refreshAll
+    updateBlockStatus, toggleTopicCompletion, refreshAll
   } = useData();
 
   const [seeding, setSeeding] = useState(false);
@@ -277,7 +277,7 @@ export default function DashboardView({ onNavigate }) {
                           </button>
                         )}
                         <button
-                          onClick={() => toggleTopicCompletion(block.subjectId, block.unitId, block.topicId, !isDone)}
+                          onClick={() => updateBlockStatus(todayPlan?._id, block._id, isDone ? 'pending' : 'completed', block.subjectId, block.unitId, block.topicId)}
                           className={`px-3 py-2 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all
                             ${isDone
                               ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200/60 dark:border-emerald-900/50'

@@ -95,6 +95,7 @@ const generateAdaptiveSchedule = (subjects, exams, pastSessions, dailyAvailableH
               uncompletedTopics.push({
                 topicName: topic.name,
                 unitTitle: unit.title,
+                unitId: unit._id,
                 estimatedMinutes: topic.estimatedMinutes || 45,
                 topicId: topic._id
               });
@@ -151,6 +152,8 @@ const generateAdaptiveSchedule = (subjects, exams, pastSessions, dailyAvailableH
                 if (revDate === dateStr && minutesScheduledToday + 30 <= totalDailyMinutes) {
                   dayBlocks.push({
                     subjectId: subject._id,
+                    unitId: unit._id,
+                    topicId: topic._id,
                     subjectName: subject.name,
                     subjectColor: subject.color || '#6C63FF',
                     topicName: `[Revision] ${topic.name}`,
@@ -185,6 +188,8 @@ const generateAdaptiveSchedule = (subjects, exams, pastSessions, dailyAvailableH
 
       dayBlocks.push({
         subjectId: item.subject._id,
+        unitId: topic.unitId,
+        topicId: topic.topicId,
         subjectName: item.subject.name,
         subjectColor: item.subject.color || '#6C63FF',
         topicName: topic.topicName,

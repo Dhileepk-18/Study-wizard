@@ -89,9 +89,28 @@ export const DataProvider = ({ children }) => {
     }
   };
 
+  const updateBlockStatus = async (planId, blockId, status, subjectId, unitId, topicId) => {
+    try {
+      if (planId && blockId) {
+        await API.put('/schedule/block-status', { planId, blockId, status });
+      }
+      if (subjectId) {
+        await API.post('/subjects/toggle-topic', { subjectId, unitId, topicId, completed: status === 'completed' });
+      }
+      if (status === 'completed') {
+        confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
+      }
+      await refreshAll();
+    } catch (err) {
+      console.error('Update block status error:', err);
+    }
+  };
+
   const toggleTopicCompletion = async (subjectId, unitId, topicId, completed) => {
     try {
-      await API.post('/subjects/toggle-topic', { subjectId, unitId, topicId, completed });
+      if (subjectId) {
+        await API.post('/subjects/toggle-topic', { subjectId, unitId, topicId, completed });
+      }
       if (completed) {
         confetti({ particleCount: 40, spread: 50, origin: { y: 0.8 } });
       }
@@ -122,6 +141,7 @@ export const DataProvider = ({ children }) => {
       rescheduling,
       refreshAll,
       triggerAdaptiveReschedule,
+      updateBlockStatus,
       toggleTopicCompletion,
       markNotificationRead
     }}>

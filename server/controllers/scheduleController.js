@@ -188,6 +188,39 @@ const updateBlockStatus = async (req, res) => {
     block.status = status;
     await plan.save();
 
+    // If block is linked to a subject, sync topic completion
+    if (block.subjectId) {
+      const Subject = require('../models/Subject');
+      const subject = await Subject.findOne({ _id: block.subjectId, userId: req.user._id });
+      if (subject) {
+        const isCompleted = status === 'completed';
+        const cleanTopicName = (block.topicName || '').replace(/^\[Revision\]\s*/, '').trim().toLowerCase();
+        
+        subject.units.forEach(unit => {
+          if (!block.unitId || unit._id.toString() === block.unitId.toString()) {
+            unit.topics.forEach(topic => {
+              if (
+                (block.topicId && topic._id.toString() === block.topicId.toString()) ||
+                (cleanTopicName && topic.name.trim().toLowerCase() === cleanTopicName)
+              ) {
+                topic.completed = isCompleted;
+                if (isCompleted) {
+                  topic.lastRevisedAt = new Date();
+                  topic.revisionCount = (topic.revisionCount || 0) + 1;
+                  const intervals = [1, 3, 7, 15];
+                  const nextDays = intervals[Math.min(topic.revisionCount - 1, intervals.length - 1)];
+                  const nextDate = new Date();
+                  nextDate.setDate(nextDate.getDate() + nextDays);
+                  topic.nextRevisionAt = nextDate;
+                }
+              }
+            });
+          }
+        });
+        await subject.save();
+      }
+    }
+
     res.json(plan);
   } catch (error) {
     res.status(500).json({ message: error.message });

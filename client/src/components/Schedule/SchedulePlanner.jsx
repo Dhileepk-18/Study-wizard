@@ -3,7 +3,7 @@ import { Calendar as CalendarIcon, RefreshCw, CheckCircle, Clock, Sparkles, Filt
 import { useData } from '../../context/DataContext';
 
 export default function SchedulePlanner({ onNavigate }) {
-  const { schedulePlans, triggerAdaptiveReschedule, rescheduling, toggleTopicCompletion } = useData();
+  const { schedulePlans, triggerAdaptiveReschedule, rescheduling, updateBlockStatus } = useData();
   const [viewMode, setViewMode] = useState('daily'); // 'daily', 'weekly', 'monthly'
   const [selectedDateIndex, setSelectedDateIndex] = useState(0);
 
@@ -144,7 +144,7 @@ export default function SchedulePlanner({ onNavigate }) {
                   <div className="flex items-center gap-3 self-end sm:self-center">
                     <span className="text-xs font-mono text-slate-400">{block.durationMinutes} mins</span>
                     <button
-                      onClick={() => toggleTopicCompletion(block.subjectId, block.unitId, block.topicId, block.status !== 'completed')}
+                      onClick={() => updateBlockStatus(currentPlan._id, block._id, block.status === 'completed' ? 'pending' : 'completed', block.subjectId, block.unitId, block.topicId)}
                       className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1 transition ${block.status === 'completed'
                           ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300'
                           : 'bg-[#6C63FF] text-white hover:bg-[#5B52E0]'

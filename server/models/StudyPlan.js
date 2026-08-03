@@ -2,6 +2,8 @@ const mongoose = require('mongoose');
 
 const StudyPlanBlockSchema = new mongoose.Schema({
   subjectId: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
+  unitId: { type: mongoose.Schema.Types.ObjectId },
+  topicId: { type: mongoose.Schema.Types.ObjectId },
   subjectName: { type: String, required: true },
   subjectColor: { type: String, default: '#6C63FF' },
   topicName: { type: String, required: true },
